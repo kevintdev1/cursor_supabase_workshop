@@ -1,0 +1,11 @@
+---
+import { Image } from 'astro:assets';
+import cursorLogo from '../assets/cursor-logo.svg';
+import supabaseLogo from '../assets/supabase.png';
+---
+
+<div class="flex items-center gap-2.5 group">
+  <Image src={cursorLogo} alt="Cursor" class="h-6 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+  <span class="text-zinc-600 font-light text-xl">×</span>
+  <Image src={supabaseLogo} alt="Supabase" class="h-6 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+</div>

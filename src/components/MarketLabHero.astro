@@ -7,27 +7,31 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<header class="relative pt-24 pb-16 sm:pt-32 sm:pb-24 overflow-hidden border-b border-white/5">
-  <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] no-print"></div>
+<header class="relative pt-32 pb-16 sm:pt-40 sm:pb-24 overflow-hidden border-b border-white/5 min-h-[min(90vh,800px)] flex flex-col justify-center" id="hero-section">
+  <!-- Interactive background -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] no-print z-0"></div>
+  <div id="glow-effect" class="absolute w-[600px] h-[600px] bg-brand-supabase/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-500 opacity-0 hidden sm:block z-0 mix-blend-screen"></div>
   
-  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300 mb-8 backdrop-blur-sm animate-fade-in-up">
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center z-10 w-full">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300 mb-8 backdrop-blur-sm animate-fade-in-up" style="animation-delay: 0.1s; opacity: 0;">
       <Zap class="w-4 h-4 text-brand-supabase" />
       <span>{t('hero.badge')}</span>
     </div>
 
-    <MarketLabCountdown />
+    <div class="animate-fade-in-up" style="animation-delay: 0.2s; opacity: 0;">
+      <MarketLabCountdown />
+    </div>
 
-    <h1 class="mx-auto max-w-4xl font-display text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400 sm:text-7xl mb-6">
-      {t('hero.title.1')} <br/><span class="text-white">{t('hero.title.2')}</span>
+    <h1 class="mx-auto max-w-5xl font-display text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500 sm:text-7xl mb-6 animate-fade-in-up" style="animation-delay: 0.3s; opacity: 0;">
+      {t('hero.title.1')} <br/><span class="text-white drop-shadow-sm">{t('hero.title.2')}</span>
     </h1>
     
-    <p class="mx-auto max-w-2xl text-lg sm:text-xl text-zinc-400 mb-12">
+    <p class="mx-auto max-w-2xl text-lg sm:text-xl text-zinc-400 mb-16 animate-fade-in-up font-light" style="animation-delay: 0.4s; opacity: 0;">
       {t('hero.desc')}
     </p>
 
-    <div class="mx-auto max-w-md text-left relative group/card">
-      <div class="absolute -inset-1 bg-gradient-to-r from-brand-supabase/30 to-brand-supabase/0 rounded-[2rem] blur-xl opacity-20 group-hover/card:opacity-40 transition duration-1000"></div>
+    <div class="mx-auto max-w-md text-left relative group/card animate-fade-in-up" style="animation-delay: 0.5s; opacity: 0;">
+      <div class="absolute -inset-1 bg-gradient-to-r from-brand-supabase/20 via-brand-supabase/5 to-transparent rounded-[2rem] blur-xl opacity-40 group-hover/card:opacity-60 transition duration-700"></div>
       
       <div class="bg-[#0a0a0a]/80 backdrop-blur-2xl rounded-[2rem] p-6 sm:p-8 border border-white/10 relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_8px_32px_0_rgba(0,0,0,0.5)]">
         <div class="absolute -top-32 -right-32 w-64 h-64 bg-brand-supabase/20 rounded-full blur-[80px]"></div>
@@ -52,23 +56,23 @@ const t = useTranslations(lang);
               <span class="text-white font-mono text-base tracking-tight" id="wifi-network">{t('wifi.network.val')}</span>
             </div>
             
-            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.04] transition-colors shadow-inner">
+            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.05] transition-colors shadow-inner">
               <div class="flex flex-col">
                 <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{t('wifi.user.label')}</span>
                 <span class="text-brand-supabase font-mono text-base tracking-tight" id="wifi-user">{t('wifi.user.val')}</span>
               </div>
-              <button class="copy-btn flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5 transition-all opacity-0 group-hover/row:opacity-100 focus:opacity-100 shadow-sm" data-target="wifi-user" aria-label="Copy user">
-                <Copy class="w-4 h-4" />
+              <button class="copy-btn flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-zinc-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-supabase/50 shadow-sm active:scale-95" data-target="wifi-user" aria-label="Copiar usuario">
+                <Copy class="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
-            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.04] transition-colors shadow-inner">
+            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.05] transition-colors shadow-inner">
               <div class="flex flex-col">
                 <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{t('wifi.pass.label')}</span>
                 <span class="text-brand-supabase font-mono text-base tracking-tight" id="wifi-pass">{t('wifi.pass.val')}</span>
               </div>
-              <button class="copy-btn flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5 transition-all opacity-0 group-hover/row:opacity-100 focus:opacity-100 shadow-sm" data-target="wifi-pass" aria-label="Copy password">
-                <Copy class="w-4 h-4" />
+              <button class="copy-btn flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-zinc-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-supabase/50 shadow-sm active:scale-95" data-target="wifi-pass" aria-label="Copiar contraseña">
+                <Copy class="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -89,6 +93,7 @@ const t = useTranslations(lang);
 </header>
 
 <script>
+  // Copy functionality with better UX feedback
   const copyBtns = document.querySelectorAll('.copy-btn');
   copyBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -99,9 +104,11 @@ const t = useTranslations(lang);
         try {
           await navigator.clipboard.writeText(targetEl.textContent);
           const originalHTML = btn.innerHTML;
-          btn.innerHTML = '<svg class="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+          btn.innerHTML = '<svg class="w-5 h-5 text-brand-supabase" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>';
+          btn.classList.add('bg-brand-supabase/20', 'border-brand-supabase/30');
           setTimeout(() => {
             btn.innerHTML = originalHTML;
+            btn.classList.remove('bg-brand-supabase/20', 'border-brand-supabase/30');
           }, 2000);
         } catch (err) {
           console.error('Failed to copy text: ', err);
@@ -109,4 +116,46 @@ const t = useTranslations(lang);
       }
     });
   });
+
+  // Interactive mouse glow effect (disabled if prefers-reduced-motion)
+  const isReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+  if (!isReduced) {
+    const heroSection = document.getElementById('hero-section');
+    const glow = document.getElementById('glow-effect');
+    
+    if (heroSection && glow) {
+      let isMouseIn = false;
+      let targetX = window.innerWidth / 2;
+      let targetY = window.innerHeight / 2;
+      let currentX = targetX;
+      let currentY = targetY;
+
+      heroSection.addEventListener('mousemove', (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        targetX = e.clientX - rect.left;
+        targetY = e.clientY - rect.top;
+        if (!isMouseIn) {
+          isMouseIn = true;
+          glow.style.opacity = '1';
+        }
+      });
+
+      heroSection.addEventListener('mouseleave', () => {
+        isMouseIn = false;
+        glow.style.opacity = '0';
+      });
+
+      // Smooth interpolation for the glow (Awwwards feel)
+      const animateGlow = () => {
+        if (isMouseIn) {
+          currentX += (targetX - currentX) * 0.1;
+          currentY += (targetY - currentY) * 0.1;
+          glow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+        }
+        requestAnimationFrame(animateGlow);
+      };
+      
+      requestAnimationFrame(animateGlow);
+    }
+  }
 </script>
