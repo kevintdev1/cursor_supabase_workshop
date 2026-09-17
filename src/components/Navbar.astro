@@ -1,67 +1,114 @@
 ---
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
-import Logo from './Logo.astro';
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import Logo from "./Logo.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const pathname = Astro.url.pathname;
-const pathWithoutLang = pathname.startsWith('/es') ? pathname.replace('/es', '') : pathname;
-const enPath = pathWithoutLang === '' ? '/' : pathWithoutLang;
-const esPath = '/es' + (pathWithoutLang === '' ? '' : pathWithoutLang);
+const pathWithoutLang = pathname.startsWith("/es")
+  ? pathname.replace("/es", "")
+  : pathname;
+const enPath = pathWithoutLang === "" ? "/" : pathWithoutLang;
+const esPath = "/es" + (pathWithoutLang === "" ? "" : pathWithoutLang);
 ---
 
-<nav id="main-nav" class="fixed top-0 z-50 w-full transition-all duration-300 border-b border-transparent bg-transparent no-print">
+<nav
+  id="main-nav"
+  aria-label="Main"
+  class="fixed top-0 z-50 w-full transition-all duration-300 border-b border-transparent bg-transparent no-print"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="py-4 flex items-center justify-between transition-all duration-300" id="nav-inner">
-      <div class="flex items-center gap-4 hover-lift">
-        <a href={enPath} aria-label="Home" class="flex items-center">
-          <Logo />
-        </a>
+    <div
+      class="py-4 flex items-center justify-between transition-all duration-300"
+      id="nav-inner"
+    >
+      <div class="flex items-center gap-8">
+        <div class="hover-lift">
+          <a
+            href={lang === "es" ? "/es/" : "/"}
+            aria-label="Home"
+            class="flex items-center"
+          >
+            <Logo />
+          </a>
+        </div>
+        {
+          /* <a 
+          href={lang === 'es' ? '/es/talk' : '/talk'} 
+          class="text-sm font-medium text-zinc-400 hover:text-white transition-colors whitespace-nowrap"
+        >
+          {t('nav.talk')}
+        </a>*/
+        }
       </div>
-      
-      <nav aria-label="Selector de idiomas" class="flex items-center gap-4 md:gap-6 bg-white/5 border border-white/10 rounded-full px-1.5 py-1 backdrop-blur-md">
+
+      <div
+        role="group"
+        aria-label={lang === "es" ? "Selector de idiomas" : "Language selector"}
+        class="flex items-center gap-4 md:gap-6 bg-white/5 border border-white/10 rounded-full px-1.5 py-1 backdrop-blur-md"
+      >
         <div class="flex items-center text-sm font-medium">
-          <a 
-            href={enPath} 
-            class={`px-3 py-1.5 rounded-full transition-all duration-300 ${lang === 'en' ? 'bg-white text-black shadow-sm' : 'text-zinc-400 hover:text-white hover:bg-white/10'}`}
-            aria-current={lang === 'en' ? 'page' : undefined}
+          <a
+            href={enPath}
+            class={`px-3 py-1.5 rounded-full transition-all duration-300 ${lang === "en" ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-white hover:bg-white/10"}`}
+            aria-current={lang === "en" ? "page" : undefined}
             aria-label="Switch to English"
           >
             EN
           </a>
-          <a 
-            href={esPath} 
-            class={`px-3 py-1.5 rounded-full transition-all duration-300 ${lang === 'es' ? 'bg-white text-black shadow-sm' : 'text-zinc-400 hover:text-white hover:bg-white/10'}`}
-            aria-current={lang === 'es' ? 'page' : undefined}
+          <a
+            href={esPath}
+            class={`px-3 py-1.5 rounded-full transition-all duration-300 ${lang === "es" ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-white hover:bg-white/10"}`}
+            aria-current={lang === "es" ? "page" : undefined}
             aria-label="Cambiar a Español"
           >
             ES
           </a>
         </div>
-      </nav>
+      </div>
     </div>
   </div>
 </nav>
 
 <script>
   // Add glass effect on scroll
-  const nav = document.getElementById('main-nav');
-  const navInner = document.getElementById('nav-inner');
-  
+  const nav = document.getElementById("main-nav");
+  const navInner = document.getElementById("nav-inner");
+
   if (nav && navInner) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 20) {
-        nav.classList.add('bg-[#050505]/80', 'backdrop-blur-xl', 'border-white/10');
-        nav.classList.remove('bg-transparent', 'border-transparent');
-        navInner.classList.add('py-3');
-        navInner.classList.remove('py-4');
-      } else {
-        nav.classList.remove('bg-[#050505]/80', 'backdrop-blur-xl', 'border-white/10');
-        nav.classList.add('bg-transparent', 'border-transparent');
-        navInner.classList.remove('py-3');
-        navInner.classList.add('py-4');
-      }
-    });
+    let isTicking = false;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!isTicking) {
+          window.requestAnimationFrame(() => {
+            if (window.scrollY > 20) {
+              nav.classList.add(
+                "bg-[#050505]/80",
+                "backdrop-blur-xl",
+                "border-white/10",
+              );
+              nav.classList.remove("bg-transparent", "border-transparent");
+              navInner.classList.add("py-3");
+              navInner.classList.remove("py-4");
+            } else {
+              nav.classList.remove(
+                "bg-[#050505]/80",
+                "backdrop-blur-xl",
+                "border-white/10",
+              );
+              nav.classList.add("bg-transparent", "border-transparent");
+              navInner.classList.remove("py-3");
+              navInner.classList.add("py-4");
+            }
+            isTicking = false;
+          });
+          isTicking = true;
+        }
+      },
+      { passive: true },
+    );
   }
 </script>

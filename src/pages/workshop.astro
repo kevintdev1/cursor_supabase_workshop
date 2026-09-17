@@ -1,0 +1,14 @@
+---
+import TalkLayout from '../layouts/TalkLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import WorkshopJourney from '../components/WorkshopJourney.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<TalkLayout title={t('workshop.title')} description={t('workshop.description')}>
+  <Navbar />
+  <WorkshopJourney />
+</TalkLayout>

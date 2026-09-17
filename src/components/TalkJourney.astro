@@ -1,0 +1,451 @@
+---
+import { talkSteps } from '../data/talk';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { Check, ArrowRight, X, RotateCcw } from '@lucide/astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<!-- Wrapper for Lenis Horizontal Scroll -->
+<div id="smooth-wrapper" class="w-full h-screen overflow-hidden bg-[#020202] text-zinc-300 selection:bg-brand-supabase selection:text-black font-sans relative">
+  
+  <!-- Interactive background grid & glow -->
+  <div class="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0"></div>
+  <div id="glow-effect" class="fixed top-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.15)_0%,transparent_70%)] rounded-full pointer-events-none transition-opacity duration-500 opacity-0 hidden sm:block z-0 mix-blend-screen"></div>
+
+  <!-- Minimalist Header -->
+  <header class="w-full absolute top-0 left-0 right-0 z-20 pointer-events-none">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 opacity-0 animate-[fade-in-up_1s_cubic-bezier(0.16,1,0.3,1)_forwards]">
+          {t('talk.title')}
+        </h1>
+        <p class="text-sm tracking-widest uppercase text-zinc-500 opacity-0 animate-[fade-in-up_1s_cubic-bezier(0.16,1,0.3,1)_0.2s_forwards]" id="progress-text">
+          0 / {talkSteps.length} {t('talk.completed')}
+        </p>
+      </div>
+      <div class="opacity-0 animate-[fade-in-up_1s_cubic-bezier(0.16,1,0.3,1)_0.3s_forwards] pointer-events-auto md:pb-1">
+        <button id="restart-btn" class="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors flex items-center gap-2 focus:outline-none">
+          <RotateCcw class="w-4 h-4" /> {t('talk.restart')}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Horizontal Journey Track (Translated by Lenis) -->
+  <div class="h-full flex items-center will-change-transform pt-16 md:pt-0 w-max" id="journey-track">
+    
+    <!-- Spacer to align perfectly with max-w-7xl container -->
+    <div class="shrink-0 start-spacer" id="start-spacer"></div>
+
+    <!-- Nodes Container (Relative for precisely pinning lines to node centers) -->
+    <div class="relative flex gap-32 md:gap-48 items-center" id="nodes-container">
+      
+      <!-- Timeline Track (ultra-thin line) -->
+      <div class="absolute left-24 right-24 h-[1px] bg-white/5 top-1/2 -translate-y-1/2 -z-30"></div>
+      
+      <!-- Scroll Progress Track (White) -->
+      <div class="absolute left-24 right-24 h-[1px] bg-white top-1/2 -translate-y-1/2 -z-20 origin-left scale-x-0 will-change-transform" id="scroll-line"></div>
+
+      <!-- Completion Progress Track (Green) -->
+      <div class="absolute left-24 right-24 h-[1px] bg-brand-supabase top-1/2 -translate-y-1/2 -z-10 transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] origin-left scale-x-0" id="progress-line"></div>
+
+      {talkSteps.map((step, index) => (
+        <button 
+          class="group relative flex flex-col items-center gap-8 focus:outline-none w-48 step-btn cursor-pointer opacity-0 animate-[fade-in-right_1s_cubic-bezier(0.16,1,0.3,1)_forwards] shrink-0"
+          style={`animation-delay: ${0.5 + index * 0.1}s`}
+          data-step={step.id}
+          data-index={index}
+        >
+          <!-- SVG Minimalist Node -->
+          <div class="relative w-24 h-24 flex items-center justify-center step-node transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105">
+            <!-- Background solid for cutting the line -->
+            <div class="absolute inset-0 bg-[#020202] rounded-full -z-10 transition-colors duration-500 step-bg"></div>
+            
+            <!-- Default ring (Changes to white on scroll) -->
+            <svg class="absolute inset-0 w-full h-full -rotate-90 text-white/10 transition-all duration-300 step-node-base-circle" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="49" fill="none" stroke="currentColor" stroke-width="1" />
+            </svg>
+            
+            <!-- Animated progress ring (Optional, fades in) -->
+            <svg class="absolute inset-0 w-full h-full -rotate-90 text-brand-supabase dash-ring opacity-0 transition-opacity duration-300" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="49" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="transition-all duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] stroke-[308] dash-circle" stroke-dasharray="308" stroke-dashoffset="308" />
+            </svg>
+
+            <!-- Content inside node -->
+            <span class="text-2xl font-light text-zinc-500 transition-colors duration-700 step-number">{step.number}</span>
+            <Check class="w-8 h-8 text-[#020202] absolute opacity-0 scale-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] step-check" stroke-width="2.5" />
+          </div>
+          
+          <div class="text-center w-full">
+            <h3 class="text-lg font-light tracking-wide text-zinc-300 mb-2 transition-colors duration-500 step-title group-hover:text-white">{step.title[lang as 'en' | 'es']}</h3>
+            <span class="inline-flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest text-brand-supabase opacity-0 -translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              {t('talk.openStep')} <ArrowRight class="w-3 h-3" />
+            </span>
+          </div>
+        </button>
+      ))}
+    </div>
+    
+    <!-- Spacer for end -->
+    <div class="w-[50vw] shrink-0"></div>
+  </div>
+
+  <div 
+    id="talk-data" 
+    data-steps={JSON.stringify(talkSteps)} 
+    data-lang={lang}
+    data-i18n-completed={t('talk.completed')}
+    data-i18n-step={t('talk.step')}
+    data-i18n-btn-completed={t('talk.btn.completed')}
+    data-i18n-btn-mark={t('talk.btn.mark')}
+    data-i18n-all-completed={t('talk.allCompleted')}
+    data-i18n-restart={t('talk.restart')}
+    class="hidden"></div>
+
+  <!-- Minimalist Fullscreen Modal -->
+  <dialog id="step-modal" class="bg-transparent p-0 w-full h-full max-w-none max-h-none m-0 backdrop:bg-[#020202]/95 backdrop:backdrop-blur-xl focus:outline-none transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 pointer-events-none [&[open]]:opacity-100 [&[open]]:pointer-events-auto">
+    <div class="h-full w-full flex flex-col md:flex-row max-w-7xl mx-auto">
+      <!-- Left sidebar with title -->
+      <div class="w-full md:w-1/3 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5">
+        <div class="mt-8 md:mt-0">
+          <span class="text-xs tracking-widest uppercase text-brand-supabase mb-8 block font-semibold" id="modal-number-label"></span>
+          <h2 class="text-4xl md:text-5xl font-light text-white mb-6 leading-tight" id="modal-title"></h2>
+          <p class="text-lg text-zinc-400 font-light leading-relaxed" id="modal-desc"></p>
+        </div>
+        
+        <div class="hidden md:block">
+          <button id="close-modal-desk" class="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors flex items-center gap-3 focus:outline-none">
+            <X class="w-4 h-4" /> {t('talk.close')}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Right content area -->
+      <div class="w-full md:w-2/3 p-8 md:p-16 md:overflow-y-auto custom-scrollbar relative flex flex-col justify-between">
+        <button id="close-modal-mob" class="md:hidden absolute top-8 right-8 text-zinc-500 hover:text-white focus:outline-none">
+          <X class="w-6 h-6" />
+        </button>
+        
+        <div class="prose prose-invert prose-brand prose-lg max-w-2xl font-light text-zinc-300 mt-8 md:mt-0" id="modal-content">
+          <!-- Injected via JS -->
+        </div>
+        
+        <div class="mt-16 pt-8 border-t border-white/5 pb-16 md:pb-0">
+          <button 
+            id="complete-btn" 
+            class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 text-sm font-bold text-black bg-brand-supabase rounded-full overflow-hidden transition-transform cursor-pointer hover:scale-105 hover:shadow-[0_0_40px_-10px_#3ecf8e] focus:outline-none"
+          >
+            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+            <span class="relative" id="complete-text">
+              Marcar como completado
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  .start-spacer {
+    --px: 1rem;
+    width: max(var(--px), calc((100vw - 80rem) / 2 + var(--px)));
+  }
+  @media (min-width: 640px) { .start-spacer { --px: 1.5rem; } }
+  @media (min-width: 1024px) { .start-spacer { --px: 2rem; } }
+
+  .custom-scrollbar::-webkit-scrollbar { width: 2px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+  
+  dialog { display: flex !important; }
+  dialog:not([open]) { display: flex !important; }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in-right {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+</style>
+
+<script>
+  import confetti from 'canvas-confetti';
+  import Lenis from 'lenis';
+
+  const dataEl = document.getElementById('talk-data');
+  if (dataEl) {
+    const steps = JSON.parse(dataEl.dataset.steps || '[]');
+    const lang = dataEl.dataset.lang || 'en';
+    const i18n = {
+      completed: dataEl.dataset.i18nCompleted,
+      step: dataEl.dataset.i18nStep,
+      btnCompleted: dataEl.dataset.i18nBtnCompleted,
+      btnMark: dataEl.dataset.i18nBtnMark,
+      allCompleted: dataEl.dataset.i18nAllCompleted,
+      restart: dataEl.dataset.i18nRestart
+    };
+
+    // Interactive mouse glow effect
+    const isReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+    if (!isReduced) {
+      const wrapper = document.getElementById('smooth-wrapper');
+      const glow = document.getElementById('glow-effect');
+      
+      if (wrapper && glow) {
+        let isMouseIn = false;
+        let targetX = window.innerWidth / 2;
+        let targetY = window.innerHeight / 2;
+        let currentX = targetX;
+        let currentY = targetY;
+
+        wrapper.addEventListener('mousemove', (e) => {
+          const rect = wrapper.getBoundingClientRect();
+          targetX = e.clientX - rect.left;
+          targetY = e.clientY - rect.top;
+          if (!isMouseIn) {
+            isMouseIn = true;
+            glow.style.opacity = '1';
+          }
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+          isMouseIn = false;
+          glow.style.opacity = '0';
+        });
+
+        const animateGlow = () => {
+          if (isMouseIn) {
+            currentX += (targetX - currentX) * 0.1;
+            currentY += (targetY - currentY) * 0.1;
+            glow.style.transform = `translate3d(${currentX - 300}px, ${currentY - 300}px, 0)`;
+          }
+          requestAnimationFrame(animateGlow);
+        };
+        
+        requestAnimationFrame(animateGlow);
+      }
+    }
+
+    // UI Elements
+    const modal = document.getElementById('step-modal') as HTMLDialogElement;
+    const completeBtn = document.getElementById('complete-btn');
+    const stepBtns = document.querySelectorAll('.step-btn');
+    const progressLine = document.getElementById('progress-line');
+    const progressText = document.getElementById('progress-text');
+    
+    // State
+    let currentStepId: string | null = null;
+    let progress: string[] = JSON.parse(localStorage.getItem('workshop_progress') || '[]');
+    
+    // Smooth Scroll (Lenis) setup for HORIZONTAL nested container
+    const wrapper = document.getElementById('smooth-wrapper');
+    const track = document.getElementById('journey-track');
+
+    const lenis = new Lenis({
+      wrapper: wrapper as HTMLElement,
+      content: track as HTMLElement,
+      orientation: 'horizontal',
+      gestureOrientation: 'both',
+      smoothWheel: true,
+      wheelMultiplier: 1.2
+    });
+
+    const scrollLine = document.getElementById('scroll-line');
+
+    lenis.on('scroll', (e: any) => {
+      const nodesContainer = document.getElementById('nodes-container');
+      if (!track || !nodesContainer) return;
+      
+      const lineLength = nodesContainer.offsetWidth - 192; // 192px is 12rem (left-24 + right-24)
+      const scale = Math.min(1, Math.max(0, e.progress || 0));
+      
+      if (scrollLine) {
+        scrollLine.style.transform = `scaleX(${scale})`;
+      }
+      
+      const tipPosition = scale * lineLength;
+      
+      stepBtns.forEach((btn) => {
+        const btnEl = btn as HTMLElement;
+        const nodePosition = btnEl.offsetLeft + (btnEl.offsetWidth / 2) - 96; // 96px is half the button width
+        const baseCircle = btn.querySelector('.step-node-base-circle');
+        
+        if (baseCircle) {
+          // Se enciende si hay scroll (scale > 0) y si la línea ya tocó el borde del nodo (nodePosition - 24)
+          if (scale > 0 && tipPosition >= (nodePosition - 24)) {
+            baseCircle.classList.remove('text-white/10');
+            baseCircle.classList.add('text-white');
+          } else {
+            baseCircle.classList.add('text-white/10');
+            baseCircle.classList.remove('text-white');
+          }
+        }
+      });
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Logic to update the progression UI
+    function updateUI() {
+      let completedCount = 0;
+      let maxIndex = -1;
+      
+      stepBtns.forEach((btn, index) => {
+        const id = (btn as HTMLElement).dataset.step;
+        if (!id) return;
+
+        const ring = btn.querySelector('.dash-ring');
+        const dashCircle = btn.querySelector('.dash-circle');
+        const number = btn.querySelector('.step-number');
+        const check = btn.querySelector('.step-check');
+        const title = btn.querySelector('.step-title');
+        
+        const bg = btn.querySelector('.step-bg');
+        const baseCircle = btn.querySelector('.step-node-base-circle');
+        
+        if (progress.includes(id)) {
+          completedCount++;
+          if (index > maxIndex) maxIndex = index;
+          
+          bg?.classList.remove('bg-[#020202]');
+          bg?.classList.add('bg-brand-supabase');
+          baseCircle?.classList.add('opacity-0');
+          
+          ring?.classList.remove('opacity-0');
+          if (dashCircle) {
+            setTimeout(() => {
+              (dashCircle as HTMLElement).style.strokeDashoffset = '0';
+            }, 50);
+          }
+          
+          number?.classList.add('opacity-0', 'scale-50');
+          check?.classList.remove('opacity-0', 'scale-50');
+          check?.classList.add('opacity-100', 'scale-100');
+          title?.classList.add('text-white');
+        }
+      });
+      
+      if (progressText) {
+        progressText.textContent = `${completedCount} / ${steps.length} ${i18n.completed}`;
+      }
+      
+      if (completedCount > 0 && progressLine && maxIndex >= 0) {
+        const nodesContainer = document.getElementById('nodes-container');
+        if (!nodesContainer) return;
+
+        const lastCompletedBtn = stepBtns[maxIndex] as HTMLElement;
+        const lineLength = nodesContainer.offsetWidth - 192;
+        const nodePosition = lastCompletedBtn.offsetLeft + (lastCompletedBtn.offsetWidth / 2) - 96;
+        
+        const pct = nodePosition / lineLength;
+        progressLine.style.transform = `scaleX(${Math.min(1, Math.max(0, pct))})`;
+        
+        if (completedCount === steps.length) {
+          progressText!.innerHTML = i18n.allCompleted!;
+          progressText!.classList.add('text-brand-supabase');
+        } else {
+          progressText!.classList.remove('text-brand-supabase');
+        }
+      } else if (progressLine) {
+        progressLine.style.transform = `scaleX(0)`;
+        progressText?.classList.remove('text-brand-supabase');
+      }
+    }
+
+    stepBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentStepId = (btn as HTMLElement).dataset.step || null;
+        const stepData = steps.find((s: any) => s.id === currentStepId);
+        if (!stepData) return;
+        
+        document.getElementById('modal-number-label')!.textContent = `${i18n.step} ${stepData.number}`;
+        document.getElementById('modal-title')!.textContent = stepData.title[lang as 'en'|'es'];
+        document.getElementById('modal-desc')!.textContent = stepData.description[lang as 'en'|'es'];
+        document.getElementById('modal-content')!.innerHTML = stepData.content[lang as 'en'|'es'];
+        
+        const btnText = document.getElementById('complete-text');
+        if (progress.includes(currentStepId!)) {
+          btnText!.textContent = i18n.btnCompleted!;
+          completeBtn!.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+          btnText!.textContent = i18n.btnMark!;
+          completeBtn!.classList.remove('opacity-50', 'pointer-events-none');
+        }
+        
+        modal.showModal();
+        lenis.stop();
+      });
+    });
+
+    const closeModal = () => {
+      modal.close();
+      lenis.start();
+    };
+
+    document.getElementById('close-modal-desk')?.addEventListener('click', closeModal);
+    document.getElementById('close-modal-mob')?.addEventListener('click', closeModal);
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    completeBtn?.addEventListener('click', () => {
+      if (currentStepId && !progress.includes(currentStepId)) {
+        progress.push(currentStepId);
+        localStorage.setItem('workshop_progress', JSON.stringify(progress));
+        
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReducedMotion) {
+           confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 }, colors: ['#3ecf8e', '#ffffff'] });
+        }
+        
+        closeModal();
+        setTimeout(updateUI, 300);
+      }
+    });
+
+    document.getElementById('restart-btn')?.addEventListener('click', () => {
+      progress = [];
+      localStorage.removeItem('workshop_progress');
+      
+      stepBtns.forEach((btn) => {
+        const ring = btn.querySelector('.dash-ring');
+        const dashCircle = btn.querySelector('.dash-circle');
+        const number = btn.querySelector('.step-number');
+        const check = btn.querySelector('.step-check');
+        const title = btn.querySelector('.step-title');
+        
+        const bg = btn.querySelector('.step-bg');
+        const baseCircle = btn.querySelector('.step-node-base-circle');
+        
+        bg?.classList.add('bg-[#020202]');
+        bg?.classList.remove('bg-brand-supabase');
+        baseCircle?.classList.remove('opacity-0');
+        
+        ring?.classList.add('opacity-0');
+        if (dashCircle) {
+          (dashCircle as HTMLElement).style.strokeDashoffset = '308';
+        }
+        
+        number?.classList.remove('opacity-0', 'scale-50');
+        check?.classList.add('opacity-0', 'scale-50');
+        check?.classList.remove('opacity-100', 'scale-100');
+        title?.classList.remove('text-white');
+      });
+      
+      updateUI();
+    });
+
+    setTimeout(updateUI, 100);
+  }
+</script>

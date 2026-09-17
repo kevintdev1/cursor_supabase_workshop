@@ -10,7 +10,7 @@ const t = useTranslations(lang);
 <header class="relative pt-32 pb-16 sm:pt-40 sm:pb-24 overflow-hidden border-b border-white/5 min-h-[min(90vh,800px)] flex flex-col justify-center" id="hero-section">
   <!-- Interactive background -->
   <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] no-print z-0"></div>
-  <div id="glow-effect" class="absolute w-[600px] h-[600px] bg-brand-supabase/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-500 opacity-0 hidden sm:block z-0 mix-blend-screen"></div>
+  <div id="glow-effect" class="absolute top-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.15)_0%,transparent_70%)] rounded-full pointer-events-none transition-opacity duration-500 opacity-0 hidden sm:block z-0 mix-blend-screen"></div>
   
   <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center z-10 w-full">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300 mb-8 backdrop-blur-sm animate-fade-in-up" style="animation-delay: 0.1s; opacity: 0;">
@@ -36,7 +36,7 @@ const t = useTranslations(lang);
       <div class="bg-[#0a0a0a]/80 backdrop-blur-2xl rounded-[2rem] p-6 sm:p-8 border border-white/10 relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_8px_32px_0_rgba(0,0,0,0.5)]">
         <div class="absolute -top-32 -right-32 w-64 h-64 bg-brand-supabase/20 rounded-full blur-[80px]"></div>
         <div class="absolute top-0 right-0 p-8 opacity-5 mix-blend-overlay">
-          <Wifi class="w-32 h-32 text-white transform rotate-12" />
+          <Wifi class="w-32 h-32 text-white rotate-12" />
         </div>
         
         <div class="relative z-10">
@@ -51,12 +51,12 @@ const t = useTranslations(lang);
           </div>
           
           <div class="space-y-3">
-            <div class="flex flex-col py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 hover:bg-white/[0.04] transition-colors shadow-inner">
+            <div class="flex flex-col py-3 px-4 bg-white/2 rounded-xl border border-white/5 hover:bg-white/4 transition-colors shadow-inner">
               <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{t('wifi.network.label')}</span>
               <span class="text-white font-mono text-base tracking-tight" id="wifi-network">{t('wifi.network.val')}</span>
             </div>
             
-            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.05] transition-colors shadow-inner">
+            <div class="flex justify-between items-center py-3 px-4 bg-white/2 rounded-xl border border-white/5 group/row hover:bg-white/5 transition-colors shadow-inner">
               <div class="flex flex-col">
                 <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{t('wifi.user.label')}</span>
                 <span class="text-brand-supabase font-mono text-base tracking-tight" id="wifi-user">{t('wifi.user.val')}</span>
@@ -66,7 +66,7 @@ const t = useTranslations(lang);
               </button>
             </div>
 
-            <div class="flex justify-between items-center py-3 px-4 bg-white/[0.02] rounded-xl border border-white/5 group/row hover:bg-white/[0.05] transition-colors shadow-inner">
+            <div class="flex justify-between items-center py-3 px-4 bg-white/2 rounded-xl border border-white/5 group/row hover:bg-white/5 transition-colors shadow-inner">
               <div class="flex flex-col">
                 <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{t('wifi.pass.label')}</span>
                 <span class="text-brand-supabase font-mono text-base tracking-tight" id="wifi-pass">{t('wifi.pass.val')}</span>
@@ -80,7 +80,7 @@ const t = useTranslations(lang);
           <div class="mt-8 relative overflow-hidden rounded-xl bg-gradient-to-r from-brand-supabase/10 to-transparent border border-brand-supabase/20 p-4">
             <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-supabase shadow-[0_0_8px_rgba(var(--brand-supabase),0.8)]"></div>
             <div class="flex gap-3">
-              <ShieldCheck class="w-5 h-5 text-brand-supabase flex-shrink-0 mt-0.5 opacity-80" />
+              <ShieldCheck class="w-5 h-5 text-brand-supabase shrink-0 mt-0.5 opacity-80" />
               <p class="text-sm text-zinc-300 leading-relaxed font-medium">
                 {t('wifi.note')}
               </p>
@@ -150,7 +150,7 @@ const t = useTranslations(lang);
         if (isMouseIn) {
           currentX += (targetX - currentX) * 0.1;
           currentY += (targetY - currentY) * 0.1;
-          glow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+          glow.style.transform = `translate3d(${currentX - 300}px, ${currentY - 300}px, 0)`;
         }
         requestAnimationFrame(animateGlow);
       };

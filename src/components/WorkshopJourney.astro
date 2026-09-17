@@ -1,0 +1,580 @@
+---
+import { workshopSteps, WORKSHOP_STEP_IDS } from '../data/workshop';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { Check, ArrowRight, X, RotateCcw } from '@lucide/astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div id="workshop-wrapper" class="w-full h-screen overflow-hidden bg-[#020202] text-zinc-300 selection:bg-brand-supabase selection:text-black font-sans relative">
+  
+  <div class="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" aria-hidden="true"></div>
+  <div id="workshop-glow" class="fixed top-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.15)_0%,transparent_70%)] rounded-full pointer-events-none transition-opacity duration-500 opacity-0 hidden sm:block z-0 mix-blend-screen" aria-hidden="true"></div>
+
+  <div id="workshop-fade-left" class="fixed left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none opacity-0 transition-opacity duration-300 will-change-opacity" aria-hidden="true"></div>
+  <div id="workshop-fade-right" class="fixed right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none transition-opacity duration-300 will-change-opacity" aria-hidden="true"></div>
+
+  <header class="w-full absolute top-0 left-0 right-0 z-20 pointer-events-none">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 workshop-anim-fade-in-up">
+          {t('workshop.heading')}
+        </h1>
+        <p class="text-sm tracking-widest uppercase text-zinc-500 workshop-anim-fade-in-up workshop-anim-delay-1" id="workshop-progress-text" aria-live="polite">
+          0 / {workshopSteps.length} {t('workshop.completed')}
+        </p>
+      </div>
+      <div class="workshop-anim-fade-in-up workshop-anim-delay-2 pointer-events-auto md:pb-1">
+        <button id="workshop-restart-btn" class="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors flex items-center gap-2 min-h-11 min-w-11">
+          <RotateCcw class="w-4 h-4" aria-hidden="true" /> {t('workshop.restart')}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="h-full flex items-center will-change-transform pt-16 md:pt-0 w-max" id="workshop-track">
+    
+    <div class="shrink-0 workshop-start-spacer" id="workshop-start-spacer"></div>
+
+    <div class="relative flex gap-32 md:gap-48 items-center" id="workshop-nodes-container">
+      
+      <div class="absolute left-24 right-24 h-[1px] bg-white/5 top-1/2 -translate-y-1/2 -z-30" aria-hidden="true"></div>
+      
+      <div class="absolute left-24 right-24 h-[1px] bg-white top-1/2 -translate-y-1/2 -z-20 origin-left scale-x-0 will-change-transform" id="workshop-scroll-line" aria-hidden="true"></div>
+
+      <div class="absolute left-24 right-24 h-[1px] bg-brand-supabase top-1/2 -translate-y-1/2 -z-10 transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] origin-left scale-x-0" id="workshop-progress-line" aria-hidden="true"></div>
+
+      {workshopSteps.map((step, index) => (
+        <button 
+          class="group relative flex flex-col items-center gap-8 w-48 workshop-step-btn cursor-pointer workshop-anim-fade-in-right shrink-0"
+          style={`animation-delay: ${0.5 + index * 0.1}s`}
+          data-step={step.id}
+          data-index={index}
+          aria-label={`${t('workshop.step')} ${step.number}: ${step.title[lang as 'en' | 'es']}`}
+        >
+          <div class="relative w-24 h-24 flex items-center justify-center workshop-step-node transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105">
+            <div class="absolute inset-0 bg-[#020202] rounded-full -z-10 transition-colors duration-500 workshop-step-bg" aria-hidden="true"></div>
+            
+            <svg class="absolute inset-0 w-full h-full -rotate-90 text-white/10 transition-all duration-300 workshop-step-base-circle" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="49" fill="none" stroke="currentColor" stroke-width="1" />
+            </svg>
+            
+            <svg class="absolute inset-0 w-full h-full -rotate-90 text-brand-supabase workshop-dash-ring opacity-0 transition-opacity duration-300" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="49" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="transition-all duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] stroke-[308] workshop-dash-circle" stroke-dasharray="308" stroke-dashoffset="308" />
+            </svg>
+
+            <span class="text-2xl font-light text-zinc-500 transition-colors duration-700 workshop-step-number" aria-hidden="true">{step.number}</span>
+            <Check class="w-8 h-8 text-[#020202] absolute opacity-0 scale-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] workshop-step-check" stroke-width="2.5" aria-hidden="true" />
+          </div>
+          
+          <div class="text-center w-full">
+            <h3 class="text-lg font-light tracking-wide text-zinc-300 mb-2 transition-colors duration-500 workshop-step-title group-hover:text-white">{step.title[lang as 'en' | 'es']}</h3>
+            <span class="inline-flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest text-brand-supabase opacity-0 -translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0" aria-hidden="true">
+              {t('workshop.openStep')} <ArrowRight class="w-3 h-3" />
+            </span>
+          </div>
+        </button>
+      ))}
+    </div>
+    
+    <div class="w-[50vw] shrink-0"></div>
+  </div>
+
+  <div 
+    id="workshop-data" 
+    data-steps={JSON.stringify(workshopSteps)} 
+    data-step-ids={JSON.stringify(WORKSHOP_STEP_IDS)}
+    data-lang={lang}
+    data-i18n-completed={t('workshop.completed')}
+    data-i18n-step={t('workshop.step')}
+    data-i18n-btn-completed={t('workshop.btn.completed')}
+    data-i18n-btn-mark={t('workshop.btn.mark')}
+    data-i18n-all-completed={t('workshop.allCompleted')}
+    data-i18n-restart={t('workshop.restart')}
+    class="hidden"></div>
+
+  <dialog 
+    id="workshop-modal" 
+    class="workshop-modal-dialog bg-transparent p-0 w-full h-full max-w-none max-h-none m-0 backdrop:bg-[#020202]/95 backdrop:backdrop-blur-xl"
+  >
+    <div class="h-full w-full flex flex-col md:flex-row max-w-7xl mx-auto">
+      <div class="w-full md:w-1/3 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5">
+        <div class="mt-8 md:mt-0">
+          <span class="text-xs tracking-widest uppercase text-brand-supabase mb-8 block font-semibold" id="workshop-modal-number-label"></span>
+          <h2 class="text-4xl md:text-5xl font-light text-white mb-6 leading-tight" id="workshop-modal-title"></h2>
+          <p class="text-lg text-zinc-400 font-light leading-relaxed" id="workshop-modal-desc"></p>
+        </div>
+        
+        <div class="hidden md:block">
+          <button id="workshop-close-desk" class="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors flex items-center gap-3 min-h-11 min-w-11">
+            <X class="w-4 h-4" aria-hidden="true" /> {t('workshop.close')}
+          </button>
+        </div>
+      </div>
+      
+      <div class="w-full md:w-2/3 p-8 md:p-16 md:overflow-y-auto workshop-custom-scrollbar relative flex flex-col justify-between">
+        <button id="workshop-close-mob" class="md:hidden absolute top-8 right-8 text-zinc-500 hover:text-white min-h-11 min-w-11 flex items-center justify-center" aria-label={t('workshop.close')}>
+          <X class="w-6 h-6" aria-hidden="true" />
+        </button>
+        
+        <div class="prose prose-invert prose-brand prose-lg max-w-2xl font-light text-zinc-300 mt-8 md:mt-0" id="workshop-modal-content">
+        </div>
+        
+        <div class="mt-16 pt-8 border-t border-white/5 pb-16 md:pb-0">
+          <button 
+            id="workshop-complete-btn" 
+            class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 text-sm font-bold text-black bg-brand-supabase rounded-full overflow-hidden transition-transform cursor-pointer hover:scale-105 hover:shadow-[0_0_40px_-10px_#3ecf8e] min-h-11"
+          >
+            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" aria-hidden="true"></div>
+            <span class="relative" id="workshop-complete-text">
+              {t('workshop.btn.mark')}
+            </span>
+          </button>
+          <p id="workshop-complete-confirmation" class="hidden text-brand-supabase font-semibold mt-4" role="status">
+            ✓ {t('workshop.btn.completed')}
+          </p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  .workshop-start-spacer {
+    --px: 1rem;
+    width: max(var(--px), calc((100vw - 80rem) / 2 + var(--px)));
+  }
+  @media (min-width: 640px) { .workshop-start-spacer { --px: 1.5rem; } }
+  @media (min-width: 1024px) { .workshop-start-spacer { --px: 2rem; } }
+
+  .workshop-custom-scrollbar::-webkit-scrollbar { width: 2px; }
+  .workshop-custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .workshop-custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+  .workshop-custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+  .workshop-modal-dialog {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .workshop-modal-dialog[open] {
+    display: flex;
+    opacity: 1;
+  }
+  @starting-style {
+    .workshop-modal-dialog[open] {
+      opacity: 0;
+    }
+  }
+
+  .workshop-anim-fade-in-up {
+    opacity: 0;
+    animation: workshop-fade-in-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .workshop-anim-delay-1 { animation-delay: 0.2s; }
+  .workshop-anim-delay-2 { animation-delay: 0.3s; }
+
+  .workshop-anim-fade-in-right {
+    opacity: 0;
+    animation: workshop-fade-in-right 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes workshop-fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes workshop-fade-in-right {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .workshop-anim-fade-in-up,
+    .workshop-anim-fade-in-right {
+      animation: none;
+      opacity: 1;
+    }
+    .workshop-modal-dialog {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import confetti from 'canvas-confetti';
+  import Lenis from 'lenis';
+
+  const dataEl = document.getElementById('workshop-data');
+  if (dataEl) {
+    let steps: Array<{
+      id: string;
+      number: number;
+      title: { en: string; es: string };
+      description: { en: string; es: string };
+      content: { en: string; es: string };
+    }>;
+    try {
+      steps = JSON.parse(dataEl.dataset.steps || '[]');
+    } catch {
+      steps = [];
+    }
+
+    const validIds: string[] = (() => {
+      try {
+        const parsed = JSON.parse(dataEl.dataset.stepIds || '[]');
+        return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+      } catch {
+        return [];
+      }
+    })();
+
+    const lang = (dataEl.dataset.lang || 'en') as 'en' | 'es';
+    const i18n = {
+      completed: dataEl.dataset.i18nCompleted || 'completed',
+      step: dataEl.dataset.i18nStep || 'Step',
+      btnCompleted: dataEl.dataset.i18nBtnCompleted || 'Completed',
+      btnMark: dataEl.dataset.i18nBtnMark || 'Mark as completed',
+      allCompleted: dataEl.dataset.i18nAllCompleted || '🎉 All steps completed!',
+      restart: dataEl.dataset.i18nRestart || 'Restart',
+    };
+
+    const STORAGE_KEY = 'workshop_steps_progress';
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function loadProgress(): string[] {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed: unknown = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((id): id is string => typeof id === 'string' && validIds.includes(id));
+      } catch {
+        return [];
+      }
+    }
+
+    function saveProgress(progress: string[]): void {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
+
+    if (!prefersReducedMotion.matches) {
+      const wrapper = document.getElementById('workshop-wrapper');
+      const glow = document.getElementById('workshop-glow');
+      
+      if (wrapper && glow) {
+        let isMouseIn = false;
+        let glowRaf = 0;
+        let targetX = window.innerWidth / 2;
+        let targetY = window.innerHeight / 2;
+        let currentX = targetX;
+        let currentY = targetY;
+        let wrapperRect = wrapper.getBoundingClientRect();
+
+        window.addEventListener('resize', () => {
+          wrapperRect = wrapper.getBoundingClientRect();
+        }, { passive: true });
+
+        const animateGlow = () => {
+          if (!isMouseIn) return;
+          currentX += (targetX - currentX) * 0.1;
+          currentY += (targetY - currentY) * 0.1;
+          glow.style.transform = `translate3d(${currentX - 300}px, ${currentY - 300}px, 0)`;
+          glowRaf = requestAnimationFrame(animateGlow);
+        };
+
+        wrapper.addEventListener('mousemove', (e) => {
+          targetX = e.clientX - wrapperRect.left;
+          targetY = e.clientY - wrapperRect.top;
+          if (!isMouseIn) {
+            isMouseIn = true;
+            glow.style.opacity = '1';
+            glowRaf = requestAnimationFrame(animateGlow);
+          }
+        }, { passive: true });
+
+        wrapper.addEventListener('mouseleave', () => {
+          isMouseIn = false;
+          cancelAnimationFrame(glowRaf);
+          glow.style.opacity = '0';
+        });
+      }
+    }
+
+    const modal = document.getElementById('workshop-modal') as HTMLDialogElement | null;
+    const completeBtn = document.getElementById('workshop-complete-btn');
+    const stepBtns = document.querySelectorAll('.workshop-step-btn');
+    const progressLine = document.getElementById('workshop-progress-line');
+    const progressText = document.getElementById('workshop-progress-text');
+    const fadeLeft = document.getElementById('workshop-fade-left');
+    const fadeRight = document.getElementById('workshop-fade-right');
+    
+    let currentStepId: string | null = null;
+    let triggerButton: HTMLElement | null = null;
+    let progress: string[] = loadProgress();
+    
+    const wrapper = document.getElementById('workshop-wrapper');
+    const track = document.getElementById('workshop-track');
+
+    if (!wrapper || !track) throw new Error('Workshop: wrapper or track not found');
+
+    const lenis = new Lenis({
+      wrapper: wrapper,
+      content: track,
+      orientation: 'horizontal',
+      gestureOrientation: 'both',
+      smoothWheel: true,
+      wheelMultiplier: 1.2,
+    });
+
+    const scrollLine = document.getElementById('workshop-scroll-line');
+
+    let lineLength = 0;
+    let nodePositions: number[] = [];
+
+    function updateMeasurements() {
+      const nodesContainer = document.getElementById('workshop-nodes-container');
+      if (nodesContainer) {
+        lineLength = nodesContainer.offsetWidth - 192;
+      }
+      nodePositions = Array.from(stepBtns).map(btn => {
+        const btnEl = btn as HTMLElement;
+        return btnEl.offsetLeft + (btnEl.offsetWidth / 2) - 96;
+      });
+    }
+
+    updateMeasurements();
+    window.addEventListener('resize', updateMeasurements);
+
+    const cachedBaseCircles = Array.from(stepBtns).map(btn => btn.querySelector('.workshop-step-base-circle'));
+
+    let lastLeftFade = false;
+    let lastRightFade = true;
+
+    lenis.on('scroll', (e: { progress?: number }) => {
+      const scale = Math.min(1, Math.max(0, e.progress || 0));
+      
+      if (scrollLine) {
+        scrollLine.style.transform = `scaleX(${scale})`;
+      }
+
+      const shouldFadeLeft = scale > 0.02;
+      const shouldFadeRight = scale < 0.98;
+      
+      if (fadeLeft && shouldFadeLeft !== lastLeftFade) {
+        fadeLeft.style.opacity = shouldFadeLeft ? '1' : '0';
+        lastLeftFade = shouldFadeLeft;
+      }
+      if (fadeRight && shouldFadeRight !== lastRightFade) {
+        fadeRight.style.opacity = shouldFadeRight ? '1' : '0';
+        lastRightFade = shouldFadeRight;
+      }
+      
+      const tipPosition = scale * lineLength;
+      
+      stepBtns.forEach((btn, index) => {
+        const baseCircle = cachedBaseCircles[index];
+        const nodePosition = nodePositions[index] || 0;
+        
+        if (baseCircle) {
+          if (scale > 0 && tipPosition >= (nodePosition - 24)) {
+            if (baseCircle.getAttribute('data-active') !== 'true') {
+              baseCircle.classList.remove('text-white/10');
+              baseCircle.classList.add('text-white');
+              baseCircle.setAttribute('data-active', 'true');
+            }
+          } else {
+            if (baseCircle.getAttribute('data-active') !== 'false') {
+              baseCircle.classList.add('text-white/10');
+              baseCircle.classList.remove('text-white');
+              baseCircle.setAttribute('data-active', 'false');
+            }
+          }
+        }
+      });
+    });
+
+    let lenisRaf: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      lenisRaf = requestAnimationFrame(raf);
+    }
+    lenisRaf = requestAnimationFrame(raf);
+
+    function updateUI() {
+      let completedCount = 0;
+      let maxIndex = -1;
+      
+      stepBtns.forEach((btn, index) => {
+        const id = (btn as HTMLElement).dataset.step;
+        if (!id) return;
+
+        const ring = btn.querySelector('.workshop-dash-ring');
+        const dashCircle = btn.querySelector('.workshop-dash-circle') as HTMLElement | null;
+        const number = btn.querySelector('.workshop-step-number');
+        const check = btn.querySelector('.workshop-step-check');
+        const title = btn.querySelector('.workshop-step-title');
+        const bg = btn.querySelector('.workshop-step-bg');
+        const baseCircle = btn.querySelector('.workshop-step-base-circle');
+        const isCompleted = progress.includes(id);
+        
+        const stepData = steps.find(s => s.id === id);
+        if (stepData) {
+          const label = `${i18n.step} ${stepData.number}: ${stepData.title[lang]}${isCompleted ? ` — ${i18n.btnCompleted}` : ''}`;
+          (btn as HTMLElement).setAttribute('aria-label', label);
+        }
+
+        if (isCompleted) {
+          completedCount++;
+          if (index > maxIndex) maxIndex = index;
+          
+          bg?.classList.remove('bg-[#020202]');
+          bg?.classList.add('bg-brand-supabase');
+          baseCircle?.classList.add('opacity-0');
+          
+          ring?.classList.remove('opacity-0');
+          if (dashCircle) {
+            setTimeout(() => {
+              dashCircle.style.strokeDashoffset = '0';
+            }, 50);
+          }
+          
+          number?.classList.add('opacity-0', 'scale-50');
+          check?.classList.remove('opacity-0', 'scale-50');
+          check?.classList.add('opacity-100', 'scale-100');
+          title?.classList.add('text-white');
+        } else {
+          bg?.classList.add('bg-[#020202]');
+          bg?.classList.remove('bg-brand-supabase');
+          baseCircle?.classList.remove('opacity-0');
+          
+          ring?.classList.add('opacity-0');
+          if (dashCircle) {
+            dashCircle.style.strokeDashoffset = '308';
+          }
+          
+          number?.classList.remove('opacity-0', 'scale-50');
+          check?.classList.add('opacity-0', 'scale-50');
+          check?.classList.remove('opacity-100', 'scale-100');
+          title?.classList.remove('text-white');
+        }
+      });
+      
+      if (progressText) {
+        if (completedCount === steps.length && steps.length > 0) {
+          progressText.innerHTML = i18n.allCompleted;
+          progressText.classList.add('text-brand-supabase');
+        } else {
+          progressText.textContent = `${completedCount} / ${steps.length} ${i18n.completed}`;
+          progressText.classList.remove('text-brand-supabase');
+        }
+      }
+      
+      if (completedCount > 0 && progressLine && maxIndex >= 0) {
+        const nodesContainer = document.getElementById('workshop-nodes-container');
+        if (!nodesContainer) return;
+
+        const lastCompletedBtn = stepBtns[maxIndex] as HTMLElement;
+        const lineLength = nodesContainer.offsetWidth - 192;
+        const nodePosition = lastCompletedBtn.offsetLeft + (lastCompletedBtn.offsetWidth / 2) - 96;
+        
+        const pct = nodePosition / lineLength;
+        progressLine.style.transform = `scaleX(${Math.min(1, Math.max(0, pct))})`;
+      } else if (progressLine) {
+        progressLine.style.transform = `scaleX(0)`;
+      }
+    }
+
+    stepBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentStepId = (btn as HTMLElement).dataset.step || null;
+        triggerButton = btn as HTMLElement;
+        const stepData = steps.find(s => s.id === currentStepId);
+        if (!stepData || !modal) return;
+        
+        const numberLabel = document.getElementById('workshop-modal-number-label');
+        const titleEl = document.getElementById('workshop-modal-title');
+        const descEl = document.getElementById('workshop-modal-desc');
+        const contentEl = document.getElementById('workshop-modal-content');
+        const btnText = document.getElementById('workshop-complete-text');
+        const confirmation = document.getElementById('workshop-complete-confirmation');
+
+        if (numberLabel) numberLabel.textContent = `${i18n.step} ${stepData.number}`;
+        if (titleEl) titleEl.textContent = stepData.title[lang];
+        if (descEl) descEl.textContent = stepData.description[lang];
+        if (contentEl) contentEl.innerHTML = stepData.content[lang];
+        
+        modal.setAttribute('aria-label', `${i18n.step} ${stepData.number}: ${stepData.title[lang]}`);
+
+        confirmation?.classList.add('hidden');
+        
+        if (currentStepId && progress.includes(currentStepId)) {
+          if (btnText) btnText.textContent = i18n.btnCompleted;
+          completeBtn?.classList.add('opacity-50', 'pointer-events-none');
+          completeBtn?.setAttribute('aria-disabled', 'true');
+        } else {
+          if (btnText) btnText.textContent = i18n.btnMark;
+          completeBtn?.classList.remove('opacity-50', 'pointer-events-none');
+          completeBtn?.removeAttribute('aria-disabled');
+        }
+        
+        modal.showModal();
+        lenis.stop();
+      });
+    });
+
+    const closeModal = () => {
+      if (!modal) return;
+      modal.close();
+      lenis.start();
+      if (triggerButton) {
+        triggerButton.focus();
+        triggerButton = null;
+      }
+    };
+
+    document.getElementById('workshop-close-desk')?.addEventListener('click', closeModal);
+    document.getElementById('workshop-close-mob')?.addEventListener('click', closeModal);
+    
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    completeBtn?.addEventListener('click', () => {
+      if (!currentStepId || progress.includes(currentStepId)) return;
+
+      progress.push(currentStepId);
+      saveProgress(progress);
+      
+      if (prefersReducedMotion.matches) {
+        const confirmation = document.getElementById('workshop-complete-confirmation');
+        confirmation?.classList.remove('hidden');
+        const btnText = document.getElementById('workshop-complete-text');
+        if (btnText) btnText.textContent = i18n.btnCompleted;
+        completeBtn?.classList.add('opacity-50', 'pointer-events-none');
+        completeBtn?.setAttribute('aria-disabled', 'true');
+        setTimeout(() => {
+          closeModal();
+          setTimeout(updateUI, 100);
+        }, 800);
+      } else {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ['#3ecf8e', '#ffffff'],
+        });
+        closeModal();
+        setTimeout(updateUI, 300);
+      }
+    });
+
+    document.getElementById('workshop-restart-btn')?.addEventListener('click', () => {
+      progress = [];
+      saveProgress(progress);
+      updateUI();
+    });
+
+    setTimeout(updateUI, 100);
+  }
+</script>

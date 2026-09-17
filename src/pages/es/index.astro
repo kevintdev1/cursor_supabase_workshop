@@ -12,10 +12,10 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<Layout title="MarketLab Workshop" lang={lang}>
+<Layout title="Workshop con Supabase y Medusa" lang={lang}>
   <Navbar />
   
-  <main class="flex-grow">
+  <main class="grow">
     <MarketLabHero />
     <MarketLabInstall />
     <MarketLabAccounts />
